@@ -23,16 +23,20 @@ export const WaterMarkers = () => {
   return (
     <div>
       {[...drikingWater.values()].map((water) => {
+        const tags = water.tags;
+        const hasTags = Object.values(tags).filter((v) => v != undefined);
         return (
           <Marker position={water.position} key={water.id}>
-            <Popup>
-              <ul>
-                <li>Fee: {water.tags.fee}</li>
-                <li>Access: {water.tags.access}</li>
-                <li>Bottle: {water.tags.bottle}</li>
-                {water.tags.man_made && <li>Man made: {water.tags.man_made}</li>}
-              </ul>
-            </Popup>
+            {hasTags && (
+              <Popup>
+                <ul>
+                  {tags.fee && <li>Fee: {tags.fee}</li>}
+                  {tags.access && <li>Access: {tags.access}</li>}
+                  {tags.bottle && <li>Bottle: {tags.bottle}</li>}
+                  {tags.man_made && <li>Man made: {tags.man_made}</li>}
+                </ul>
+              </Popup>
+            )}
           </Marker>
         );
       })}
