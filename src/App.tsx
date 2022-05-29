@@ -1,5 +1,8 @@
 import { Map } from './components/map';
+import { leafletSetup } from './misc/leaflet-setup';
 import { MapProvider } from './service/map.provider';
+
+leafletSetup();
 
 function App() {
   return (

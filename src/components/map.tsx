@@ -12,7 +12,7 @@ export function Map() {
 
   return (
     <div id="map">
-      {true && <Loader></Loader>}
+      {isLoading && <Loader></Loader>}
       <MapContainer center={[51.505, -0.09]} zoom={15}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
