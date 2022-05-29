@@ -1,6 +1,7 @@
 import { debounce } from 'lodash-es';
 import { useCallback, useContext } from 'react';
 import { Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { blueLocationIcon, redLocationIcon } from '../leaflet/icons';
 import { MapContext, MapElementsContext } from '../service/map.provider';
 
 export const WaterMarkers = () => {
@@ -26,7 +27,7 @@ export const WaterMarkers = () => {
         const tags = water.tags;
         const hasTags = Object.values(tags).filter((v) => v != undefined).length > 0;
         return (
-          <Marker position={water.position} key={water.id}>
+          <Marker icon={hasTags ? blueLocationIcon : redLocationIcon} position={water.position} key={water.id}>
             {hasTags && (
               <Popup>
                 <ul>
