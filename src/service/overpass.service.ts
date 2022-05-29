@@ -25,7 +25,14 @@ export type OverpassTags = {
 export type DrikingWaterSpot = {
   position: LatLng;
   id: number;
-  tags: OverpassTags;
+  tags: WaterSpotTags;
+};
+
+export type WaterSpotTags = {
+  fee?: boolean;
+  bottle?: boolean;
+  access?: boolean;
+  //man_made?: boolean;
 };
 
 export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingWaterSpot>> => {
@@ -36,7 +43,16 @@ export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingW
   return fetch(url).then(async (resp) => {
     const json: { elements: Array<OverpassElement> } = await resp.json();
     return json.elements.map((e): DrikingWaterSpot => {
-      return { position: new LatLng(e.lat, e.lon), id: e.id, tags: e.tags };
+      return { position: new LatLng(e.lat, e.lon), id: e.id, tags: parseTags(e.tags) };
     });
   });
 };
+
+function parseTags(tags: OverpassTags): WaterSpotTags {
+  return {
+    access: tags.access ? tags.access === 'yes' : undefined,
+    bottle: tags.bottle ? tags.bottle === 'yes' : undefined,
+    fee: tags.fee ? tags.fee === 'yes' : undefined,
+    //man_made: tags.man_made ? tags.man_made === 'yes' : undefined,
+  };
+}

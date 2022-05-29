@@ -30,10 +30,9 @@ export const WaterMarkers = () => {
             {hasTags && (
               <Popup>
                 <ul>
-                  {tags.fee && <li>Fee: {tags.fee}</li>}
-                  {tags.access && <li>Access: {tags.access}</li>}
-                  {tags.bottle && <li>Bottle: {tags.bottle}</li>}
-                  {tags.man_made && <li>Man made: {tags.man_made}</li>}
+                  {tags.fee && <li>Fee: {tags.fee ? 'Yes' : 'No'}</li>}
+                  {tags.access && <li>Access: {tags.access ? 'Yes' : 'No'}</li>}
+                  {tags.bottle && <li>Bottle: {tags.bottle ? 'Yes' : 'No'}</li>}
                 </ul>
               </Popup>
             )}
