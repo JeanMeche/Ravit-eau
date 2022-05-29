@@ -1,5 +1,5 @@
 import { Map } from './components/map';
-import { leafletSetup } from './misc/leaflet-setup';
+import { leafletSetup } from './leaflet/leaflet-setup';
 import { MapProvider } from './service/map.provider';
 
 leafletSetup();
