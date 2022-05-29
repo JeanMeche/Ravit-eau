@@ -13,3 +13,7 @@ Simple React App to show neareast Water fountains.
 ## Run
 
 `pnpm run dev` or `npm run start`
+
+## Demo
+
+[Demo here](https://jeanmeche.github.io/Ravit-eau/)
