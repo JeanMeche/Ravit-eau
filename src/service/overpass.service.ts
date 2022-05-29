@@ -1,3 +1,4 @@
+import { getBoundsOfDistance, getCenterOfBounds, getDistance } from 'geolib';
 import { LatLng } from 'leaflet';
 
 export type OverpassBounds = {
@@ -35,8 +36,12 @@ export type WaterSpotTags = {
   //man_made?: boolean;
 };
 
+const maxDiagonalDistance = 15000;
+const maxDistanceFromCenter = 7500;
+
 export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingWaterSpot>> => {
-  const rect = [bounds.south, bounds.west, bounds.north, bounds.east].join(',');
+  const sanitizedBounds = getBounds(bounds);
+  const rect = [sanitizedBounds.south, sanitizedBounds.west, sanitizedBounds.north, sanitizedBounds.east].join(',');
 
   const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
 
@@ -48,11 +53,31 @@ export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingW
   });
 };
 
+function getBounds(bounds: OverpassBounds) {
+  const topLeft = { latitude: bounds.north, longitude: bounds.west };
+  const topRight = { latitude: bounds.north, longitude: bounds.east };
+  const bottomLeft = { latitude: bounds.south, longitude: bounds.west };
+  const bottomRight = { latitude: bounds.south, longitude: bounds.east };
+
+  const diagonalDistance = getDistance(topLeft, bottomRight);
+  if (diagonalDistance < maxDiagonalDistance) {
+    return bounds;
+  }
+
+  const center = getCenterOfBounds([topLeft, topRight, bottomRight, bottomLeft]);
+  return getResonableBounds(center);
+}
+
+function getResonableBounds(location: { latitude: number; longitude: number }): OverpassBounds {
+  const [sw, ne] = getBoundsOfDistance(location, maxDistanceFromCenter);
+
+  return { east: ne.longitude, north: ne.latitude, south: sw.latitude, west: sw.longitude };
+}
+
 function parseTags(tags: OverpassTags): WaterSpotTags {
   return {
     access: tags.access ? tags.access === 'yes' : undefined,
     bottle: tags.bottle ? tags.bottle === 'yes' : undefined,
     fee: tags.fee ? tags.fee === 'yes' : undefined,
-    //man_made: tags.man_made ? tags.man_made === 'yes' : undefined,
   };
 }
