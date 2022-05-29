@@ -24,7 +24,7 @@ export const WaterMarkers = () => {
     <div>
       {[...drikingWater.values()].map((water) => {
         const tags = water.tags;
-        const hasTags = Object.values(tags).filter((v) => v != undefined);
+        const hasTags = Object.values(tags).filter((v) => v != undefined).length > 0;
         return (
           <Marker position={water.position} key={water.id}>
             {hasTags && (

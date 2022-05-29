@@ -12,7 +12,9 @@ export function Map() {
 
   return (
     <div id="map">
-      {isLoading && <Loader></Loader>}
+      <div className="loader-wrapper w-full flex items-end justify-center p-1 overflow-hidden pointer-events-none fixed">
+        {isLoading && <Loader></Loader>}
+      </div>
       <MapContainer center={[51.505, -0.09]} zoom={15}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -8,8 +8,9 @@
   height: 100%;
 }
 
-#loader {
-  position: absolute;
-  bottom: 0;
+.loader-wrapper {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+
   z-index: 1000;
 }
