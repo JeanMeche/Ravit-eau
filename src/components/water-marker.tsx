@@ -30,7 +30,7 @@ export const WaterMarkers = () => {
                 <li>Fee: {water.tags.fee}</li>
                 <li>Access: {water.tags.access}</li>
                 <li>Bottle: {water.tags.bottle}</li>
-                <li>Man made: {water.tags.man_made}</li>
+                {water.tags.man_made && <li>Man made: {water.tags.man_made}</li>}
               </ul>
             </Popup>
           </Marker>

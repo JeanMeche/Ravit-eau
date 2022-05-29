@@ -28,12 +28,10 @@ export type DrikingWaterSpot = {
   tags: OverpassTags;
 };
 
-export const searchWaterSpots = (
-  bounds: OverpassBounds
-): Promise<Array<DrikingWaterSpot>> => {
+export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingWaterSpot>> => {
   const rect = [bounds.south, bounds.west, bounds.north, bounds.east].join(',');
 
-  const url = `http://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
+  const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
 
   return fetch(url).then(async (resp) => {
     const json: { elements: Array<OverpassElement> } = await resp.json();
