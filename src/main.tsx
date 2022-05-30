@@ -5,11 +5,12 @@ import App from './App';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  // <React.StrictMode>
-  <BrowserRouter>
-    <Routes>
-      <Route path="/:lat/:lng" element={<App />} />
-    </Routes>
-  </BrowserRouter>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/:lat/:lng" element={<App />} />
+        <Route path="*" element={<App />} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>
 );

@@ -130,6 +130,8 @@ const filter = [
   'wikidata',
   'level',
   'survey_date',
+  'fixme',
+  'FIXME',
 ];
 function parseTags(tags: OverpassTags): WaterSpotTags {
   const filtered = Object.entries(tags).filter(([k, v]) => !filter.includes(k));
