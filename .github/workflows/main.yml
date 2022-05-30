@@ -46,6 +46,12 @@ jobs:
 
       - name: Build app
         run: pnpm run build
+
+      - uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+        with:
+          html_path: 'index.html'
+          base_href: '/Ravit-eau/'
+
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
