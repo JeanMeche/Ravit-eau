@@ -16,11 +16,25 @@ export type OverpassElement = {
 };
 
 export type OverpassTags = {
-  access?: 'yes' | 'no';
+  access?: 'private' | 'customers' | 'restricted' | 'permissive' | 'yes';
   amenity?: 'drinking_water';
   bottle?: 'yes' | 'no';
   fee?: 'yes' | 'no';
   man_made?: 'water_tap';
+  wheelchair?: 'yes' | 'no' | 'limited';
+  name?: string;
+  indoor?: 'no' | 'yes';
+  drinking_water?: 'yes';
+  natural?: 'spring';
+  disused?: 'no' | 'yes';
+  working?: 'no' | 'yes';
+  seasonal?: 'no' | 'yes';
+  opening_hours?: string;
+  image?: string;
+  wikimedia_commons?: string; // TODO: Request url from https://en.wikipedia.org/w/api.php?action=query&titles=File:Albert_Einstein_Head.jpg&prop=imageinfo&iiprop=url
+  'drink:sparkling_water'?: 'yes' | 'no';
+  'drinking_water:legal'?: 'yes' | 'no';
+  operational_status?: 'out_of_order';
 };
 
 export type DrikingWaterSpot = {
@@ -30,10 +44,16 @@ export type DrikingWaterSpot = {
 };
 
 export type WaterSpotTags = {
-  fee?: boolean;
+  name?: string;
+  fee?: true;
   bottle?: boolean;
-  access?: boolean;
-  //man_made?: boolean;
+  restrictedAccess?: 'private' | 'customers' | 'restricted' | 'permissive';
+  outOfOrder?: true;
+  image?: string;
+  seasonal?: true;
+  openingHours?: string;
+  isSparking?: true;
+  noDrinking?: true;
 };
 
 const maxDiagonalDistance = 15000;
@@ -74,10 +94,58 @@ function getResonableBounds(location: { latitude: number; longitude: number }): 
   return { east: ne.longitude, north: ne.latitude, south: sw.latitude, west: sw.longitude };
 }
 
+const filter = [
+  'bottle',
+  'fee',
+  'man_made',
+  'amenity',
+  'check_date',
+  'source',
+  'note',
+  'name',
+  'survey',
+  'survey:date',
+  'wheelchair',
+  'description',
+  'drinking_water:seasonal',
+  'natural',
+  'indoor',
+  'drinking_water',
+  'amenity_1',
+  'operator',
+  'disused',
+  'working',
+  'source:date',
+  'mapillary',
+  'name:en',
+  'name:fr',
+  'name:de',
+  'cold_water',
+  'ele',
+  'fire_hydrant:type',
+  'ref',
+  'operator:wikidata',
+  'operator:wikipedia',
+  'wikipedia',
+  'wikidata',
+  'level',
+  'survey_date',
+];
 function parseTags(tags: OverpassTags): WaterSpotTags {
+  const filtered = Object.entries(tags).filter(([k, v]) => !filter.includes(k));
+  if (filtered.length > 0) {
+    console.log(JSON.stringify(filtered));
+  }
   return {
-    access: tags.access ? tags.access === 'yes' : undefined,
+    restrictedAccess: tags.access !== 'yes' ? tags.access : undefined,
     bottle: tags.bottle ? tags.bottle === 'yes' : undefined,
-    fee: tags.fee ? tags.fee === 'yes' : undefined,
+    fee: tags.fee === 'yes' || undefined,
+    outOfOrder: tags.working === 'no' || tags.operational_status === 'out_of_order' || undefined,
+    name: tags.name,
+    image: tags.image,
+    seasonal: tags.seasonal === 'yes' || undefined,
+    openingHours: tags.opening_hours,
+    isSparking: tags['drink:sparkling_water'] === 'yes' || undefined,
+    noDrinking: tags['drinking_water:legal'] === 'no' || undefined,
   };
 }

@@ -1,4 +1,5 @@
 import { Map } from './components/map';
+import { SidebarProvider } from './components/sidebar';
 import { leafletSetup } from './leaflet/leaflet-setup';
 import { MapProvider } from './service/map.provider';
 
@@ -8,7 +9,9 @@ function App() {
   return (
     <div className="App">
       <MapProvider>
-        <Map></Map>
+        <SidebarProvider>
+          <Map></Map>
+        </SidebarProvider>
       </MapProvider>
     </div>
   );

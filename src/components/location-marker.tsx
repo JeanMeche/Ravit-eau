@@ -5,15 +5,12 @@ import { userIcon } from '../leaflet/icons';
 
 export const LocationMarker = () => {
   const [position, setPosition] = useState<LatLng>();
-  const [_, setBbox] = useState<Array<string>>([]);
-
   const map = useMap();
 
   useEffect(() => {
     let locationCircle: Circle; // FIXME: probably should'nt use local var
     map.locate().on('locationfound', function (e) {
       setPosition(e.latlng);
-      map.panTo(e.latlng);
       const radius = e.accuracy;
       if (locationCircle) {
         locationCircle.removeFrom(map);
@@ -21,7 +18,6 @@ export const LocationMarker = () => {
 
       locationCircle = L.circle(e.latlng, radius, { fillOpacity: 0.1 });
       locationCircle.addTo(map);
-      setBbox(e.bounds.toBBoxString().split(','));
     });
   }, [map]);
 
