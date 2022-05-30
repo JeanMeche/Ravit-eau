@@ -1,6 +1,6 @@
 export const Loader = () => {
   return (
-    <div className="py-2.5 px-5 mr-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 inline-flex items-center">
+    <div className="py-2.5 px-5 mr-2 text-sm font-medium rounded-lg border bg-gray-800 text-gray-400 border-gray-600 inline-flex items-center">
       <svg
         role="status"
         className="inline w-4 h-4 mr-3 text-white animate-spin"
