@@ -3,7 +3,8 @@ module.exports = {
   theme: {
     extend: {
       zIndex: {
-        overmap: '1000',
+        overmap: '500',
+        panel: '5000',
       },
     },
   },

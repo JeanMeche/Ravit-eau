@@ -15,18 +15,17 @@ export const MapProvider = ({ children }: { children: any }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const searchSpots = async (bounds: LatLngBounds) => {
-    // TODO: add contraints to prevent massive Overpass Request
-
     setIsLoading(true);
-    const spots = await searchWaterSpots({
-      south: bounds.getSouth(),
-      east: bounds.getEast(),
-      north: bounds.getNorth(),
-      west: bounds.getWest(),
-    });
-
-    setIsLoading(false);
-    setDrikingWater(new Map([...drikingWater, ...spots.map((s): [number, DrikingWaterSpot] => [s.id, s])]));
+    try {
+      const spots = await searchWaterSpots({
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        north: bounds.getNorth(),
+        west: bounds.getWest(),
+      });
+      setDrikingWater(new Map([...drikingWater, ...spots.map((s): [number, DrikingWaterSpot] => [s.id, s])]));
+      setIsLoading(false);
+    } catch {}
   };
 
   return <MapContext.Provider value={{ isLoading, drikingWater, searchSpots }}>{children}</MapContext.Provider>;

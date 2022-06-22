@@ -59,18 +59,30 @@ export type WaterSpotTags = {
 const maxDiagonalDistance = 15000;
 const maxDistanceFromCenter = 7500;
 
+let aborter: AbortController | null = null; // make the aborter accessible
+
 export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingWaterSpot>> => {
+  if (aborter != null) {
+    aborter.abort();
+  }
+  aborter = new AbortController();
+
   const sanitizedBounds = getBounds(bounds);
   const rect = [sanitizedBounds.south, sanitizedBounds.west, sanitizedBounds.north, sanitizedBounds.east].join(',');
 
   const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
 
-  return fetch(url).then(async (resp) => {
+  return fetch(url, { signal: aborter.signal }).then(async (resp) => {
+    aborter = null;
     const json: { elements: Array<OverpassElement> } = await resp.json();
     return json.elements.map((e): DrikingWaterSpot => {
       return { position: new LatLng(e.lat, e.lon), id: e.id, tags: parseTags(e.tags) };
     });
   });
+  // .catch((error) => {
+  //   console.log(`got error : ${error}`);
+  //   return [];
+  // });
 };
 
 function getBounds(bounds: OverpassBounds) {
