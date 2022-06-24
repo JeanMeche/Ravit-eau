@@ -1,5 +1,6 @@
 import { getBoundsOfDistance, getCenterOfBounds, getDistance } from 'geolib';
 import { LatLng } from 'leaflet';
+import { reject } from 'lodash-es';
 
 export type OverpassBounds = {
   south: number;
@@ -59,30 +60,39 @@ export type WaterSpotTags = {
 const maxDiagonalDistance = 15000;
 const maxDistanceFromCenter = 7500;
 
-let aborter: AbortController | null = null; // make the aborter accessible
+let aborter = new AbortController();
+
+let searchResolve: (value: DrikingWaterSpot[]) => void, searchReject: (value: DrikingWaterSpot[]) => void;
+let searchPromise: Promise<Array<DrikingWaterSpot>>;
 
 export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingWaterSpot>> => {
-  if (aborter != null) {
-    aborter.abort();
-  }
+  aborter.abort();
   aborter = new AbortController();
+  searchPromise = new Promise((resolve, reject) => {
+    searchResolve = resolve;
+    searchReject = reject;
+  });
 
   const sanitizedBounds = getBounds(bounds);
   const rect = [sanitizedBounds.south, sanitizedBounds.west, sanitizedBounds.north, sanitizedBounds.east].join(',');
 
   const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
 
-  return fetch(url, { signal: aborter.signal }).then(async (resp) => {
-    aborter = null;
-    const json: { elements: Array<OverpassElement> } = await resp.json();
-    return json.elements.map((e): DrikingWaterSpot => {
-      return { position: new LatLng(e.lat, e.lon), id: e.id, tags: parseTags(e.tags) };
+  fetch(url, { signal: aborter.signal })
+    .then(async (resp) => {
+      const json: { elements: Array<OverpassElement> } = await resp.json();
+      const result = json.elements.map((e): DrikingWaterSpot => {
+        return { position: new LatLng(e.lat, e.lon), id: e.id, tags: parseTags(e.tags) };
+      });
+      searchResolve(result);
+    })
+    .catch((error) => {
+      if (error.name !== 'AbortError') {
+        reject([]);
+      }
     });
-  });
-  // .catch((error) => {
-  //   console.log(`got error : ${error}`);
-  //   return [];
-  // });
+
+  return searchPromise;
 };
 
 function getBounds(bounds: OverpassBounds) {
