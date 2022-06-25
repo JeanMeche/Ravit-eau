@@ -25,7 +25,9 @@ export const MapProvider = ({ children }: { children: any }) => {
       });
       setDrikingWater(new Map([...drikingWater, ...spots.map((s): [number, DrikingWaterSpot] => [s.id, s])]));
       setIsLoading(false);
-    } catch {}
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   return <MapContext.Provider value={{ isLoading, drikingWater, searchSpots }}>{children}</MapContext.Provider>;

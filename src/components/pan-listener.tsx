@@ -16,7 +16,7 @@ export const PanListener = () => {
   const debouncePan = useCallback(
     debounce(() => {
       const center = map.getCenter();
-      navigate(`/${center.lat.toPrecision(7)}/${center.lng.toPrecision(7)}`);
+      navigate(`/${map.getZoom()}/${center.lat.toPrecision(7)}/${center.lng.toPrecision(7)}`);
       searchSpots(map.getBounds());
     }, 500),
     []

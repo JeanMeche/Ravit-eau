@@ -77,9 +77,11 @@ export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingW
   const rect = [sanitizedBounds.south, sanitizedBounds.west, sanitizedBounds.north, sanitizedBounds.east].join(',');
 
   const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
-
   fetch(url, { signal: aborter.signal })
     .then(async (resp) => {
+      if (resp.status === 429) {
+        return reject([]);
+      }
       const json: { elements: Array<OverpassElement> } = await resp.json();
       const result = json.elements.map((e): DrikingWaterSpot => {
         return { position: new LatLng(e.lat, e.lon), id: e.id, tags: parseTags(e.tags) };
@@ -88,7 +90,7 @@ export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingW
     })
     .catch((error) => {
       if (error.name !== 'AbortError') {
-        reject([]);
+        throw error;
       }
     });
 
@@ -158,7 +160,7 @@ const filter = [
 function parseTags(tags: OverpassTags): WaterSpotTags {
   const filtered = Object.entries(tags).filter(([k, v]) => !filter.includes(k));
   if (filtered.length > 0) {
-    console.log(JSON.stringify(filtered));
+    // console.log(JSON.stringify(filtered));
   }
   return {
     restrictedAccess: tags.access !== 'yes' ? tags.access : undefined,

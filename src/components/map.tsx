@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 import { Button } from './button';
+import { LocateMeOnLoad } from './locate-me-on-load';
 import { LocationMarker } from './location-marker';
 import { MapButtonWrapper } from './map-buttons-wrapper';
 import { MapLoader } from './map-loader';
@@ -15,7 +16,7 @@ export function Map() {
   const [map, setMap] = useState<L.Map | null>(null);
   const { toggleSidebar } = useContext(SidebarContext) as SidebarContextType;
 
-  const { lat, lng } = useParams();
+  const { lat, lng, zoom } = useParams();
 
   const coords: [number, number] = [+(lat ?? 51.505), +(lng ?? -0.09)];
 
@@ -28,8 +29,9 @@ export function Map() {
   return (
     <div id="map" className="h-screen	relative">
       <Sidebar></Sidebar>
-      <MapContainer center={coords} zoom={15} ref={setMap}>
+      <MapContainer center={coords} zoom={+(zoom ?? 15)} ref={setMap}>
         <PanListener />
+        <LocateMeOnLoad />
         <MapButtonWrapper>
           <Button onClick={() => onLocateClick()}>
             <svg viewBox="0 0 24 24" width="24px" fill="#fff">
