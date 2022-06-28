@@ -79,7 +79,7 @@ export const searchWaterSpots = (bounds: OverpassBounds): Promise<Array<DrikingW
   const url = `https://www.overpass-api.de/api/interpreter?data=[out:json];node["amenity"="drinking_water"](${rect});out body;`;
   fetch(url, { signal: aborter.signal })
     .then(async (resp) => {
-      if (resp.status === 429) {
+      if (resp.status !== 200) {
         return reject([]);
       }
       const json: { elements: Array<OverpassElement> } = await resp.json();
