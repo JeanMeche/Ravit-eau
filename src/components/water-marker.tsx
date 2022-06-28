@@ -1,5 +1,5 @@
 import { DivIcon } from 'leaflet';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import {
   blueLocationIcon,
@@ -13,6 +13,17 @@ import { WaterSpotTags } from '../service/overpass.service';
 
 export const WaterMarkers = () => {
   const { drikingWater } = (useContext(MapContext) as MapElementsContext) || { drikingWater: new Map() };
+  const popupRef = useRef<any>(null);
+
+  const handleClick = () => {
+    // Dirty fix, waiting for 1.9 release
+    // https://github.com/Leaflet/Leaflet/issues/8159
+    setTimeout(() => {
+      popupRef?.current?._closeButton?.addEventListener('click', (event: MouseEvent) => {
+        event.preventDefault();
+      });
+    }, 500);
+  };
 
   return (
     <div>
@@ -23,9 +34,16 @@ export const WaterMarkers = () => {
             ([k, v]) => (k !== 'outOfOrder' && v != undefined) || (k === 'outOfOrder' && v === true)
           ).length > 0;
         return (
-          <Marker icon={getIcon(tags, hasTags)} position={water.position} key={water.id}>
+          <Marker
+            icon={getIcon(tags, hasTags)}
+            position={water.position}
+            key={water.id}
+            eventHandlers={{
+              click: (e) => handleClick(),
+            }}
+          >
             {hasTags && (
-              <Popup minWidth={200}>
+              <Popup ref={popupRef} minWidth={200}>
                 {/* {JSON.stringify(tags)} */}
                 {tags.name && <h2>{tags.name}</h2>}
 
